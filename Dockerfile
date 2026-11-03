@@ -1,16 +1,17 @@
-FROM golang:alpine AS build
+FROM rust:1.99.1-alpine AS build
+
+RUN apk add --no-cache musl-dev
 
 WORKDIR /app
 
 COPY . .
 
-RUN apk -U --no-cache add git gcc make
-RUN CGO_ENABLED=0 go build -o dist/ -a -trimpath -ldflags="-s -w" -tags='netgo timetzdata' ./cmd/routerd
+RUN cargo build --release --locked
 
 FROM scratch
 
-COPY --from=build /app/dist/routerd /usr/local/bin/routerd
+COPY --from=build /app/target/release/spa_serve /usr/local/bin/spa_serve
 
 EXPOSE 80/tcp
 
-CMD ["routerd", "/www"]
+CMD ["spa_serve", "/www"]

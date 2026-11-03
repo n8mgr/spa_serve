@@ -1,0 +1,38 @@
+name: Main
+
+on:
+  pull_request:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Setup Environment
+        run: |
+          rustup update stable
+          rustup toolchain install nightly
+          rustup component add rustfmt --toolchain nightly
+      - name: Rustfmt
+        run: cargo +nightly fmt --all -- --check
+      - name: Clippy
+        run: cargo clippy --locked --all-targets --all-features -- -D warnings
+      - name: Build docs
+        run: cargo doc --locked --all-features --no-deps
+        env:
+          RUSTDOCFLAGS: "-D warnings"
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Setup Rust
+        run: rustup update stable
+      - name: Test
+        run: cargo test --locked --all-features

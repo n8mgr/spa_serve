@@ -1,0 +1,28 @@
+[package]
+name = "spa_serve"
+version = "0.0.1"
+edition = "2024"
+rust-version = "1.99"
+publish = false
+readme = "README.md"
+description = "A minimal binary dedicated to serving static single-page applications"
+repository = "https://github.com/n8mgr/spa_serve"
+
+[dependencies]
+bytes = "1"
+cap-std = "4"
+headers = "0.4"
+http-body-util = "0.1"
+hyper = { version = "1", features = ["http1", "server"] }
+hyper-staticfile = "0.10"
+hyper-util = { version = "0.1", features = ["tokio", "server-auto"] }
+mime_guess = "2"
+percent-encoding = "2"
+tokio = { version = "1", features = ["fs", "macros", "rt-multi-thread", "net", "time"] }
+tokio-io-timeout = "1"
+
+[dev-dependencies]
+tempfile = "3"
+
+[profile.release]
+strip = true
